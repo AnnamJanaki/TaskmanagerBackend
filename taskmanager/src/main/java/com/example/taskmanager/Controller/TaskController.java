@@ -1,10 +1,10 @@
 package com.example.taskmanager.Controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.taskmanager.Service.*;
 import com.example.taskmanager.model.*;
-import com.example.taskmanager.dto.*;
 
 import java.util.List;
 
@@ -12,11 +12,10 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/tasks")
 public class TaskController {
-    private final TaskService taskService;
-
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
+    @Autowired
+    private  TaskService taskService;
+    @Autowired
+    private  UserService userService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<Task>> getTasksByUserId(@PathVariable Long userId) {
@@ -25,10 +24,9 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task, UserService userService){
+    public ResponseEntity<Task> createTask(@RequestBody Task task ){
         // Fetch the User object using the userId provided in the request
-        Long userId = task.getUser().getId();
-        User user = userService.getUserById(userId);
+        User user = userService.getUserById(task.getUser().getId());
         if (user == null) {
             throw new RuntimeException("User not found");
         }
@@ -51,7 +49,7 @@ public class TaskController {
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
-        taskService.deleteTask(taskId);
+     taskService.deleteTask(taskId);
         return ResponseEntity.noContent().build();
     }
 

@@ -1,5 +1,6 @@
 package com.example.taskmanager.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.taskmanager.Repository.*;
 import com.example.taskmanager.model.*;
@@ -11,11 +12,12 @@ import java.util.Optional;
 
 @Service
 public class TaskService {
-    private final TaskRepository taskRepository;
+    @Autowired
+    private  TaskRepository taskRepository;
 
-    public TaskService(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-    }
+    //public TaskService(TaskRepository taskRepository) {
+//        this.taskRepository = taskRepository;
+//    }
 
     public List<Task> getTasksByUserId(Long userId) {
         return taskRepository.findByUserId(userId);
@@ -29,12 +31,16 @@ public class TaskService {
     public Task updateTask(@PathVariable("taskId") Long taskId, @RequestBody Task task) {
         // Retrieve the existing task from the TaskRepository using taskId
         Optional<Task> existingTaskOptional = taskRepository.findById(taskId);
-        if (((Optional<?>) existingTaskOptional).isPresent()) {
+        if (existingTaskOptional.isPresent()) {
             Task existingTask = existingTaskOptional.get();
 
             // Update the existing task with the properties of the updatedTask
-            existingTask.setTaskName(task.getTaskName());
+            existingTask.setTitle(task.getTitle());
             existingTask.setDescription(task.getDescription());
+            if(task.getStatus() > 0) {
+                existingTask.setStatus(  task.getStatus());
+            }
+
 
             // Add any additional logic, validation, or data manipulation before updating the task
             return taskRepository.save(existingTask);

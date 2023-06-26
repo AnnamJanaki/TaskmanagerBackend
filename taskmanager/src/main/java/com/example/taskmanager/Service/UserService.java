@@ -1,6 +1,7 @@
 package com.example.taskmanager.Service;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.taskmanager.Repository.*;
 import com.example.taskmanager.dto.*;
@@ -10,13 +11,13 @@ import com.example.taskmanager.LoginResponse;
 import java.util.Optional;
 
 @Service
-@Getter
 public class UserService {
-    private final UserRepository userRepository;
+    @Autowired
+    private  UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+//    public UserService(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
 
     public User signup(SignupRequest signupRequest) {
         User user = new User();
@@ -25,7 +26,7 @@ public class UserService {
         user.setPassword(signupRequest.getPassword());
         Long userId = signupRequest.getUserId();
         if (userId != null) {
-            user.setUserId(userId);
+            user.setId(userId);
         }
         // Save the user to the UserRepository
         User savedUser = userRepository.save(user);
@@ -45,7 +46,7 @@ public class UserService {
         if (storedUser != null && storedUser.getPassword().equals(user.getPassword())) {
             // Login successful, generate a token or manage session
             LoginResponse loginResponse = new LoginResponse();
-            loginResponse.setUserId(storedUser.getUserId()); // Set the userId in the response
+            loginResponse.setUserId(storedUser.getId()); // Set the userId in the response
             return loginResponse;
         } else {
             // Authentication failed

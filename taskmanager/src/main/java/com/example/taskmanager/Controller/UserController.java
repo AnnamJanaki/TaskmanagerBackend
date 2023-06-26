@@ -1,5 +1,6 @@
 package com.example.taskmanager.Controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.taskmanager.Service.UserService;
@@ -9,13 +10,11 @@ import com.example.taskmanager.Repository.*;
 @RestController
 @CrossOrigin
 public class UserController {
-    private final UserService userService;
-    private final UserRepository userRepository;
+    @Autowired
+    private  UserService userService;
 
-    public UserController(UserService userService,UserRepository userRepository) {
-        this.userService = userService;
-        this.userRepository = userRepository;
-    }
+    @Autowired
+    private  UserRepository userRepository;
 
     @PostMapping("/signup")
     public ResponseEntity<User> signup(@RequestBody SignupRequest signupRequest) {
@@ -24,12 +23,12 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody User user) {
+    public User login(@RequestBody User user) {
         User storedUser = userRepository.findByEmail(user.getEmail());
         if (storedUser != null && storedUser.getPassword().equals(user.getPassword())) {
             // Login successful, generate a token or manage session
 
-            return ResponseEntity.ok(storedUser);
+            return storedUser;
         } else {
             // Authentication failed
             throw new RuntimeException("Invalid credentials");
